@@ -15,30 +15,58 @@ You can see a working demo below:
 
 * 3scale account with Developer Portal
 * a Swagger spec (3scale ActiveDocs) for each service
+    * Only **OpenAPI version 2.0** is supported for embedded documentation.
+	* The system name of your ActiveDocs instance should match the system name of the corresponding Product in 3scale.
 
-## Build APIs.json file
-
-You already have an APIs.json file to describe your API? Genius! you can already move to next part.
-
-If you are not familiar with this format I encourage you look at the [specification](https://apisjson.org) first.
-
-To build your file you can use the [builder](http://apis.io/builder) available on [APIs.io](http://apis.io) or any IDE to produce a `.json` file.
-
-For our tutorial we will use this sample [file](../apis.json)
-It has two APIs: Voice API, and SMS API.
-
-As you may have seen, we have added vendor extension `X-3scale`. You should add it to each API contained in your `apis.json` file.
-Like the following:
+## Obtain APIs.json file
+### Use a liquid template
+Feel free to use this sample [file](../apis.json):
+```
+{
+  "name": "3scale APIs",
+  "description": "This is an inventory of APIs managed by 3scale.",
+  "image": "https://static.redhat.com/libs/redhat/brand-assets/latest/corp/logo--hat-only.svg",
+  "tags": [
+    "APIs"
+  ],
+  "specificationVersion": "0.14",
+  "apis": [
+    {% for service in provider.services %}
+    {
+      "name": "{{ service.name }}",
+      "image":"https://static.redhat.com/libs/redhat/brand-assets/latest/corp/logo--hat-only.svg",
+      "description": "{{ service.description }}",
+      "X-3scale": {
+        "service_id":{{ service.id }},
+        "swagger_system_name":"{{ service.system_name }}"
+      },
+      "humanURL": "",
+      "baseURL": "",
+      "tags": [
+        "all"
+      ],
+      "properties": [],
+      "contact": []
+    }{% if service != provider.services.last %},{% endif %}
+    {% endfor %}
+  ],
+  "include": [],
+  "maintainers": []
+}
 
 ```
-"X-3scale":{
-	"service_id":{THREESCALE_SERVICE_ID},
-	"swagger_system_name":"{THREESCALE_ACTIVEDOCS_SYSTEM_NAME}"
+It will capture all APIs under management by your 3scale instance.
+
+### Build a static file
+Alternatively, you can build your own `apis.json` file using the [APIs.io builder](http://apis.io/builder).
+
+If you decide to build your own static file, you should add this attribute to each API to ensure that lookups are performed correctly:
+```json
+"X-3scale": {
+	"service_id": {{ service.id }}, //numerical service ID
+	"swagger_system_name":"{{ service.system_name }}" //system name of your ActiveDocs instance (default assumes this matches your Product's system name)
 }
 ```
-
-Replace `THREESCALE_SERVICE_ID` by the corresponding ID.
-And replace `THREESCALE_ACTIVEDOCS_SYSTEM_NAME` by the system name of the ActiveDocs.
 
 Once you are done, you will be ready to upload it to your developer portal.
 
@@ -50,12 +78,10 @@ Create a new Page named `apis.json`, it has to be under `Root` section.
 Under `Advanced options`:
 
 1. Change content-type to `application/json`
-2. Make sure liquid tags are disabled
-3. Make sure layout filed is blank
+2. Make sure liquid tags are **enabled** (if you're using the template above)
+3. Make sure layout field is blank
 
 ![](../img/DevPortal_create_apis.json_page.png)
-
-This file will now be available on this URL `https://YOURDOMAIN.3scale.net/apis.json`
 
 ## Display search experience
 
@@ -83,6 +109,21 @@ Data for `About` and `Documentation` sections are loaded dynamically from `apis.
 
 Other sections have placeholders that you can easily modify, they will be common to every API. If you want to make them dynamic for each API, add more fields under `X-3scale` section of `apis.json`.
 
+## Add Plan Signup
+Next, we'll add application plan signup to the Search view. Create a new page called `plans.json` which will be used by `apidetails`:
+
+1. Create a new page `plans.json` under `Root` section.
+2. Change content-type to `application/json`
+3. Under `Advanced options`: Enable liquid tags
+4. Make sure layout field is blank
+5. Copy paste content from [plans.json](../plans.json)
+
+## Change Navigation to point to our feature
+We've just dramatically improved out of the box Documentation! Update the link in the top navbar to point to our new `apilist`:
+
+1. Open Partials -> submenu
+2. Change the `href` tags from `/docs` to `/apilist` on lines **16** and **66**
+3. Save and Publish
 ## Test and customize
 
 Your discovery experience is now ready :) Congrats!

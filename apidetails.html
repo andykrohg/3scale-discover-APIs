@@ -1,5 +1,6 @@
 
 {% active_docs version: "2.0" %}
+
 <div id="content"></div>
 
 <style media="screen">
@@ -48,9 +49,7 @@
 {% raw %}
   <div id="signup">
     <h2>Signup</h2>
-      <p>
-        Lorem ipsum dolor sit amet, his utamur abhorreant contentiones ex, detraxit referrentur cu vim. Vim nulla denique efficiendi te, no nobis iudico debitis ius. Eum putant everti oportere te, tantas eirmod gloriatur pri no, eu has essent maiestatis. Inermis petentium reformidans ius ei, id eligendi deterruisset has. Sea ea modus virtute albucius.
-      </p>
+      <p id="signup-containers"></p>
   </div>
 {% endraw %}
 </script>
@@ -67,14 +66,12 @@
 </script>
 
 <script id="supportTpl" type="text/template">
-{% raw %}
   <div id="support">
     <h2>Support</h2>
       <p>
         Lorem ipsum dolor sit amet, his utamur abhorreant contentiones ex, detraxit referrentur cu vim. Vim nulla denique efficiendi te, no nobis iudico debitis ius. Eum putant everti oportere te, tantas eirmod gloriatur pri no, eu has essent maiestatis. Inermis petentium reformidans ius ei, id eligendi deterruisset has. Sea ea modus virtute albucius.
       </p>
   </div>
-{% endraw %}
 </script>
 
 <script id="errorTpl" type="text/template">
@@ -170,9 +167,9 @@
 		var specSystemName = API[0]['X-3scale']['swagger_system_name'];
       	var domId = "swagger-ui-container-" + specSystemName;
       	loadSwagger(specSystemName, domId);
+        loadPlans(service_id);
       }
      });
-
   })
 
   function filterArraybyThreescaleServiceId(arr,service_id){
@@ -180,7 +177,7 @@
   }
 
   function extractServiceID(){
-    var url = window.location.href
+    var url = window.location.href == 'about:srcdoc' ? window.parent.location : window.location
     var captured = /service_id=([^&]+)/.exec(url)[1]; // Value is in [1]
     return captured;
   }
@@ -201,7 +198,7 @@
   function loadSwagger(specSystemName, domId) {
     // create DOM element
     $("#swagger-ui-containers").append(swaggerSectionHtml(domId));
-
+    
     var swaggerObjName = 'swaggerUi' + specSystemName;
     var domPreCodeId = '#' + domId + ' pre code';
     var swaggerObj = new SwaggerUi({
@@ -223,7 +220,16 @@
         return ApiDocsProxy.execute(httpClient, obj);
       }
     });
+
+	console.log(swaggerObj);
+    
     window[swaggerObjName] = swaggerObj;
-    window[swaggerObjName].load();
+   	window[swaggerObjName].load();
+  }
+  
+  function loadPlans(service_id) {
+    $.getJSON('plans.json').done(function(data) {
+		  $("#signup-containers").append(data[service_id]);
+    });
   }
 </script>

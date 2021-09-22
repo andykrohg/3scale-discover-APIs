@@ -1,89 +1,31 @@
 {
-  "name": "World Company",
-  "description": "This is an inventory of APIs available as part of the API World Company network.",
-  "image": "http://i.imgur.com/ntV92b4.png",
+  "name": "3scale APIs",
+  "description": "This is an inventory of APIs managed by 3scale.",
+  "image": "https://static.redhat.com/libs/redhat/brand-assets/latest/corp/logo--hat-only.svg",
   "tags": [
-    "Telecommunications",
-    "Communications"
+    "APIs"
   ],
-  "created": "2017-01-24",
-  "modified": "2017-01-24",
-  "url": "http://worldcompany.com/apis.json",
   "specificationVersion": "0.14",
   "apis": [
+    {% for service in provider.services %}
     {
-      "name": "SMS API",
-      "description": "Short Message Service (SMS) is a text messaging service component of most telephone, World Wide Web, and mobile telephony systems. It uses standardized communication protocols to enable mobile phone devices to exchange short text messages. We provide an API for it to let you send SMS to your customers.",
-      "X-3scale":{
-        "service_id":12345,
-        "swagger_system_name":"echo"
+      "name": "{{ service.name }}",
+      "image":"https://static.redhat.com/libs/redhat/brand-assets/latest/corp/logo--hat-only.svg",
+      "description": "{{ service.description }}",
+      "X-3scale": {
+        "service_id":{{ service.id }},
+        "swagger_system_name":"{{ service.system_name }}"
       },
-      "image": "https://enterprisedemo.3scale.net/images/circle2.png",
-      "humanURL": "https://worldcompany.com/",
-      "baseURL": "http://sms.worldcompany.com",
+      "humanURL": "",
+      "baseURL": "",
       "tags": [
-        "sms",
-        "text"
+        "all"
       ],
-      "properties": [
-        {
-          "type": "X-signup",
-          "url": "https://worldcompany.com/"
-        },
-        {
-          "type": "Swagger",
-          "url": "https://worldcompany.com/swagger/spec/sms2_0.json"
-        }
-      ],
-      "contact": [
-        {
-          "FN": "World Company",
-          "email": "info@worldcompany.com",
-          "X-twitter": "worldcompany"
-        }
-      ]
-    },
-    {
-      "name": "Voice API",
-      "description": "Voice over Internet Protocol is a methodology and group of technologies for the delivery of voice communications and multimedia sessions over Internet Protocol (IP) networks, such as the Internet. The terms Internet telephony, broadband telephony, and broadband phone service specifically refer to the provisioning of communications services (voice, fax, SMS, voice-messaging) over the public Internet.",
-      "X-3scale":{
-        "service_id":12345,
-        "swagger_system_name":"echo"
-      },
-      "image": "https://enterprisedemo.3scale.net/images/circle1.png",
-      "humanURL": "https://worldcompany.com/",
-      "baseURL": "http://voice.worldcompany.com",
-      "tags": [
-        "voice",
-        "VoIP",
-        "Telephony",
-        "phone"
-      ],
-      "properties": [
-        {
-          "type": "X-signup",
-          "url": "https://worldcompany.com"
-        },
-        {
-          "type": "Swagger",
-          "url": "https://worldcompany.com/swagger/spec/sms2_0.json"
-        }
-      ],
-      "contact": [
-        {
-          "FN": "World Company",
-          "email": "info@worldcompany.com",
-          "X-twitter": "worldcompany"
-        }
-      ]
-    }
+      "properties": [],
+      "contact": []
+    }{% if service != provider.services.last %},{% endif %}
+    {% endfor %}
   ],
   "include": [],
-  "maintainers": [
-    {
-      "FN": "World Company",
-      "email": "info@worldcompany.com",
-      "X-twitter": "worldcompany"
-    }
-  ]
+  "maintainers": []
 }
